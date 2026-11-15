@@ -24,28 +24,33 @@ The GitHub Pages demo runs entirely in the browser, using fictional data and bro
 
 Run `npm run build:demo` to build `dist/demo`. The **Deploy demo** GitHub Actions workflow tests and publishes that directory to GitHub Pages on a push to `main` or manual dispatch. GitHub Pages must be enabled in repository Settings → Pages with Source set to GitHub Actions. Pages serves static files only: all support API calls are handled in the browser using the same search and validation logic as the local app. Changes stay in browser local storage; use fictional information and Reset demo to clear it. No server, model, email, helpdesk or live action is connected. A successful deployment is required before a demo URL can be claimed.
 
-## Run locally
+## Run the Python backend and frontend
 
-Requires **Node.js 20 or newer**. No packages or API keys are required. The app persists demo messages, decisions, review requests and uploaded documents in `data/state.json` on the machine running the server. This file is ignored by Git and is cleared by Reset demo.
+Requires Python 3.10 or newer. From the repository root:
 
 ```bash
-git clone https://github.com/rajuerladinny/ai-customer-support-agent.git
-cd ai-customer-support-agent
-npm start
+python -m venv .venv
+# macOS / Linux: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -r backend/requirements.txt
+python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Open <http://localhost:3000>. To use a different port, set `PORT` before running `npm start`. The local server binds to `127.0.0.1`.
+Open <http://127.0.0.1:8000>. The FastAPI server serves the existing frontend and exposes the support API. Its SQLite database is `data/support.db` by default; set `RESOLVE_DB_PATH` to use another local path. Use fictional data only: the database is not encrypted and this app has no login or tenant isolation. The Python database does **not** import the previous Node demo JSON automatically.
 
-To try the document workflow: open **Knowledge**, upload a small `.txt` file with fictional content, return to **Overview**, and ask a question containing relevant words. Search is keyword-based and may miss relevant text or return an irrelevant excerpt; it is not semantic retrieval or AI.
+The frontend still displays three predefined cases. FastAPI provides the cases API, message storage, sample order lookup, document search, approval and human-review APIs; no model is connected. Uploaded `.txt` files, messages, approvals and reviews persist locally. The Reset demo control deletes these records from the local database.
+
+The original Node server is still available for development with Node.js 20+: `npm start`. It uses its own separate `data/state.json` and does not share data with the Python backend. The GitHub Pages demo uses browser-local storage and has no server.
 
 ## Quality checks
 
 ```bash
 npm run check
 npm test
+python -m unittest discover -s backend/tests -v
 ```
 
-The CI workflow runs syntax checks and backend unit tests on push, pull request, or manual dispatch. These tests do not verify browser rendering, real AI quality, production security, integrations, or support resolution outcomes.
+The CI workflow runs syntax checks, Node tests and Python API tests on push, pull request, or manual dispatch. These tests do not verify browser rendering, real AI quality, production security, integrations, or support resolution outcomes.
 
 ## Workflow
 
@@ -63,6 +68,8 @@ The predefined case timelines and dashboard counts are sample UI data; they do n
 | Path | Purpose |
 | --- | --- |
 | `worker/index.html` | Frontend, styling and simulated case workspace |
+| `backend/app/main.py` | FastAPI support APIs and SQLite persistence |
+| `backend/tests/` | FastAPI integration tests |
 | `worker/backend.mjs` | Sample order lookup and extractive search API |
 | `scripts/dev-server.mjs` | Local HTTP adapter and state API |
 | `tests/backend.test.mjs` | Backend behaviour tests |
@@ -73,4 +80,4 @@ The predefined case timelines and dashboard counts are sample UI data; they do n
 
 ## Important limitations
 
-This is a prototype for fictional data only. It has no authentication, authorization, tenant isolation, rate limiting, privacy controls, or production monitoring. Local demo messages, documents, review requests and approval decisions are stored unencrypted in `data/state.json`; use fictional data only. Uploaded text is stored by the local server; do not upload confidential or personal information. The demonstration must not be used to make real support, refund or replacement decisions.
+This is a prototype for fictional data only. It has no authentication, authorization, tenant isolation, rate limiting, privacy controls, or production monitoring. Local demo messages, documents, review requests and approval decisions are stored unencrypted in `data/support.db` (Python) or `data/state.json` (Node); use fictional data only. Uploaded text is stored by the local server; do not upload confidential or personal information. The demonstration must not be used to make real support, refund or replacement decisions.
