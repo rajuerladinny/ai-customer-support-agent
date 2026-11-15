@@ -5,3 +5,5 @@ test('answers with attributed policy excerpt',async()=>{let r=await post('damage
 test('returns unknown instead of inventing facts',async()=>{let j=await(await post('Can speakers connect wirelessly?')).json();assert.equal(j.source,null);assert.equal(j.mode,'no_match')});
 test('searches an uploaded text document with a citation',async()=>{let j=await(await post('warranty coverage', [{name:'warranty.txt',text:'Warranty coverage lasts two years.'}])).json();assert.equal(j.source,'warranty.txt');assert.match(j.answer,/two years/)});
 test('rejects invalid requests',async()=>{assert.equal((await post('')).status,400)});
+
+test('rejects a weak one-word overlap for a multi-term question',async()=>{let j=await(await post('replacement headphones warranty')).json();assert.equal(j.mode,'no_match');assert.equal(j.source,null)});

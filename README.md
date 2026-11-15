@@ -13,15 +13,15 @@ A fictional electronics store receives three sample cases: damaged headphones, a
 - Three predefined support cases with a case investigation timeline.
 - Server-side lookup of two fictional sample orders (`NS-1042`, `NS-1038`).
 - Basic extractive search over two sample policy documents, with source names and an explicit no-match response.
-- Upload up to five `.txt` files, each no larger than 15 KB, to search during the current browser session. Their content is sent to the server with each search request and is lost on refresh.
-- Approve or reject a simulated replacement; all approval and chat state is browser memory and resets on refresh.
+- Upload up to five `.txt` files, each no larger than 15 KB, to search locally. Documents are saved in the same local JSON file and can be removed in the Knowledge screen.
+- Approve or reject a simulated replacement; approval decisions and chat messages are saved to a local JSON file across restarts.
 - Backend tests and GitHub Actions checks.
 
-The original private Sites demo uses the same underlying UI and backend. This independent GitHub project runs with the Node development server described below; it does not include the private Site identity, credentials or deployment automation.
+The original private Sites demo is an earlier version and does not include these local persistence changes. This independent GitHub project runs with the Node development server described below; it does not include the private Site identity, credentials or deployment automation.
 
 ## Run locally
 
-Requires **Node.js 20 or newer**. No packages or API keys are required.
+Requires **Node.js 20 or newer**. No packages or API keys are required. The app persists demo messages, decisions and uploaded documents in `data/state.json` on the machine running the server. This file is ignored by Git and is cleared by Reset demo.
 
 ```bash
 git clone https://github.com/rajuerladinny/ai-customer-support-agent.git
@@ -45,10 +45,10 @@ The CI workflow runs syntax checks and backend unit tests on push, pull request,
 ## Workflow
 
 1. A customer submits a question or selects a sample case.
-2. A sample order ID is retrieved from the backend, or the backend searches built-in policies and optional session documents.
+2. A sample order ID is retrieved from the backend, or the backend searches built-in policies and locally saved documents.
 3. The workspace shows a matching excerpt and its source, or reports that no match was found.
 4. A support person reviews the simulated investigation and proposed action.
-5. A simulated approval or rejection updates the in-memory demo. No real-world action occurs.
+5. A simulated approval or rejection updates the local demo state. No real-world action occurs.
 
 The predefined case timelines and dashboard counts are sample UI data; they do not yet update automatically from backend activity. See [Architecture and roadmap](docs/architecture.md) for the actual implementation and planned work.
 
@@ -58,11 +58,11 @@ The predefined case timelines and dashboard counts are sample UI data; they do n
 | --- | --- |
 | `worker/index.html` | Frontend, styling and simulated case workspace |
 | `worker/backend.mjs` | Sample order lookup and extractive search API |
-| `scripts/dev-server.mjs` | Local HTTP adapter for the backend |
+| `scripts/dev-server.mjs` | Local HTTP adapter and state API |
 | `tests/backend.test.mjs` | Backend behaviour tests |
 | `.github/workflows/ci.yml` | Syntax checks and tests |
 | `docs/architecture.md` | Architecture, limitations and development roadmap |
 
 ## Important limitations
 
-This is a prototype for fictional data only. It has no authentication, authorization, durable storage, access controls, rate limiting, privacy controls, or production monitoring. Uploaded text is sent to the server during queries; do not upload confidential or personal information. The demonstration must not be used to make real support, refund or replacement decisions.
+This is a prototype for fictional data only. It has no authentication, authorization, tenant isolation, rate limiting, privacy controls, or production monitoring. Local demo messages, documents and approval decisions are stored unencrypted in `data/state.json`; use fictional data only. Uploaded text is stored by the local server; do not upload confidential or personal information. The demonstration must not be used to make real support, refund or replacement decisions.
