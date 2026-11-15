@@ -18,7 +18,11 @@ A fictional electronics store receives three sample cases: damaged headphones, a
 - Create and resolve a local human-review request for a sample case, retaining the customer summary and timestamps. No message is sent externally.
 - Backend tests and GitHub Actions checks.
 
-The original private Sites demo is an earlier version and does not include these local persistence changes. This independent GitHub project runs with the Node development server described below; it does not include the private Site identity, credentials or deployment automation.
+The GitHub Pages demo runs entirely in the browser, using fictional data and browser-local storage. It does not call a real AI model or a support backend. The private Sites demo is an earlier version and does not contain these features.
+
+## Browser-only demo
+
+Run `npm run build:demo` to build `dist/demo`. The **Deploy demo** GitHub Actions workflow tests and publishes that directory to GitHub Pages on a push to `main` or manual dispatch. GitHub Pages must be enabled in repository Settings → Pages with Source set to GitHub Actions. Pages serves static files only: all support API calls are handled in the browser using the same search and validation logic as the local app. Changes stay in browser local storage; use fictional information and Reset demo to clear it. No server, model, email, helpdesk or live action is connected. A successful deployment is required before a demo URL can be claimed.
 
 ## Run locally
 
@@ -62,6 +66,8 @@ The predefined case timelines and dashboard counts are sample UI data; they do n
 | `worker/backend.mjs` | Sample order lookup and extractive search API |
 | `scripts/dev-server.mjs` | Local HTTP adapter and state API |
 | `tests/backend.test.mjs` | Backend behaviour tests |
+| `demo/` | Browser-only API adapter for the static demo |
+| `.github/workflows/demo.yml` | Build and deploy demo to GitHub Pages |
 | `.github/workflows/ci.yml` | Syntax checks and tests |
 | `docs/architecture.md` | Architecture, limitations and development roadmap |
 
