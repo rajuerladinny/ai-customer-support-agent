@@ -54,3 +54,11 @@ Never upload real customer records or sensitive documents to this prototype. Its
 ## Local human-review queue
 
 `POST /api/escalations` creates a review containing the case ID, a customer message summary and timestamp. It rejects a second open review for the same case. `GET /api/escalations` lists local requests, and `POST /api/escalations/resolve` records a review timestamp. The queue does not notify anyone, connect to a helpdesk, verify resolution, or provide a complete audit trail. Reset clears it.
+
+## GitHub Pages demo
+
+The Pages build copies the same backend search and state API logic into a browser-only adapter. The demo intercepts `/api/` requests without sending them over the network and stores fictional data in browser local storage. There is no shared state, real model, server-side access control or real-world action. Storage may persist across browser sessions until Reset demo or browser data clearing. GitHub Pages must be enabled with the Actions source; deployment is separate from the Node local server. Do not use personal or sensitive data.
+
+## Production readiness
+
+This is a prototype. Before real users or data: use a transactional database and migrations; implement authentication, roles, tenant isolation and server-side authorization; add encrypted storage and a retention/deletion policy; introduce audit logging, rate limits, structured monitoring and incident handling; evaluate document grounding and unsafe inputs; test accessible browser flows; and deploy a secure server with separately managed secrets. The static public demo cannot meet these requirements.
