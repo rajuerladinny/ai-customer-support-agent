@@ -1,0 +1,5 @@
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import {handle} from '../worker/backend.mjs';
+const port=Number(process.env.PORT || 3000);
+createServer(async(req,res)=>{try{const url=new URL(req.url,`http://localhost:${port}`);if(url.pathname==='/'&&req.method==='GET'){res.writeHead(200,{'content-type':'text/html; charset=utf-8'});res.end(await readFile(new URL('../worker/index.html',import.meta.url)));return}if(!url.pathname.startsWith('/api/')){res.writeHead(404);res.end('Not found');return}let chunks=[],size=0;for await(const chunk of req){size+=chunk.length;if(size>100_000){res.writeHead(413);res.end('Request too large');return}chunks.push(chunk)}const init={method:req.method,headers:req.headers};if(!['GET','HEAD'].includes(req.method))init.body=Buffer.concat(chunks);const response=await handle(new Request(url,init));res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()))}catch{res.writeHead(500);res.end('Internal server error')}}).listen(port,'127.0.0.1',()=>console.log(`Resolve AI: http://localhost:${port}`));

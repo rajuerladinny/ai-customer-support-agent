@@ -1,0 +1,13 @@
+{
+  "name": "resolve-ai-customer-support-agent",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Customer support investigation and approval demo",
+  "scripts": {
+    "start": "node scripts/dev-server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check worker/backend.mjs && node --check scripts/dev-server.mjs && node scripts/check-frontend.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
