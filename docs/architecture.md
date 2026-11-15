@@ -1,6 +1,14 @@
 # Architecture, workflow and roadmap
 
-## Current architecture
+## Python backend milestone
+
+`backend/app/main.py` implements FastAPI endpoints backed by SQLite. The service hosts the existing interface and stores demo cases, messages, approvals, uploaded text and review requests in `data/support.db`. It exposes `/api/health`, `/api/cases`, `/api/order`, `/api/answer`, `/api/state`, `/api/messages`, `/api/approval`, `/api/documents`, `/api/documents/delete`, `/api/escalations`, `/api/escalations/resolve` and `/api/reset`. See the README for startup and tests.
+
+The Python API uses extractive keyword search with source names, not an LLM or a vector database. The frontend's case list and initial case narratives are still predefined, even though `/api/cases` is available. SQLite and the existing Node JSON store are separate and have no migration path. GitHub Pages remains a separate browser-only demo and does not call FastAPI.
+
+
+
+## Original Node prototype architecture
 
 The browser renders the support workspace from `worker/index.html`. It keeps case selection in memory. Chat messages, uploaded text documents, human-review requests and approval decisions are persisted by the local server to a JSON file. The Node local server (`scripts/dev-server.mjs`) serves the page and forwards `/api/*` requests to the shared Fetch-style handler in `worker/backend.mjs`.
 
