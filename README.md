@@ -15,13 +15,14 @@ A fictional electronics store receives three sample cases: damaged headphones, a
 - Basic extractive search over two sample policy documents, with source names and an explicit no-match response.
 - Upload up to five `.txt` files, each no larger than 15 KB, to search locally. Documents are saved in the same local JSON file and can be removed in the Knowledge screen.
 - Approve or reject a simulated replacement; approval decisions and chat messages are saved to a local JSON file across restarts.
+- Create and resolve a local human-review request for a sample case, retaining the customer summary and timestamps. No message is sent externally.
 - Backend tests and GitHub Actions checks.
 
 The original private Sites demo is an earlier version and does not include these local persistence changes. This independent GitHub project runs with the Node development server described below; it does not include the private Site identity, credentials or deployment automation.
 
 ## Run locally
 
-Requires **Node.js 20 or newer**. No packages or API keys are required. The app persists demo messages, decisions and uploaded documents in `data/state.json` on the machine running the server. This file is ignored by Git and is cleared by Reset demo.
+Requires **Node.js 20 or newer**. No packages or API keys are required. The app persists demo messages, decisions, review requests and uploaded documents in `data/state.json` on the machine running the server. This file is ignored by Git and is cleared by Reset demo.
 
 ```bash
 git clone https://github.com/rajuerladinny/ai-customer-support-agent.git
@@ -49,6 +50,7 @@ The CI workflow runs syntax checks and backend unit tests on push, pull request,
 3. The workspace shows a matching excerpt and its source, or reports that no match was found.
 4. A support person reviews the simulated investigation and proposed action.
 5. A simulated approval or rejection updates the local demo state. No real-world action occurs.
+6. Request human review from the case workspace; the local queue shows its summary and status until marked reviewed. This does not notify a real person.
 
 The predefined case timelines and dashboard counts are sample UI data; they do not yet update automatically from backend activity. See [Architecture and roadmap](docs/architecture.md) for the actual implementation and planned work.
 
@@ -65,4 +67,4 @@ The predefined case timelines and dashboard counts are sample UI data; they do n
 
 ## Important limitations
 
-This is a prototype for fictional data only. It has no authentication, authorization, tenant isolation, rate limiting, privacy controls, or production monitoring. Local demo messages, documents and approval decisions are stored unencrypted in `data/state.json`; use fictional data only. Uploaded text is stored by the local server; do not upload confidential or personal information. The demonstration must not be used to make real support, refund or replacement decisions.
+This is a prototype for fictional data only. It has no authentication, authorization, tenant isolation, rate limiting, privacy controls, or production monitoring. Local demo messages, documents, review requests and approval decisions are stored unencrypted in `data/state.json`; use fictional data only. Uploaded text is stored by the local server; do not upload confidential or personal information. The demonstration must not be used to make real support, refund or replacement decisions.

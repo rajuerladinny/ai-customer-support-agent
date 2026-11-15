@@ -2,7 +2,7 @@
 
 ## Current architecture
 
-The browser renders the support workspace from `worker/index.html`. It keeps case selection in memory. Chat messages, uploaded text documents and approval decisions are persisted by the local server to a JSON file. The Node local server (`scripts/dev-server.mjs`) serves the page and forwards `/api/*` requests to the shared Fetch-style handler in `worker/backend.mjs`.
+The browser renders the support workspace from `worker/index.html`. It keeps case selection in memory. Chat messages, uploaded text documents, human-review requests and approval decisions are persisted by the local server to a JSON file. The Node local server (`scripts/dev-server.mjs`) serves the page and forwards `/api/*` requests to the shared Fetch-style handler in `worker/backend.mjs`.
 
 - `GET /api/order?id=NS-1042` looks up a fictional order from a hard-coded dataset; unknown orders return HTTP 404.
 - `POST /api/answer` accepts a question, searches built-in and locally stored text documents, and selects a matching excerpt by overlapping keywords. It requires two matching terms for multi-term questions and otherwise returns a no-match message. Input is bounded; this is not a semantic model or evidence verification system.
@@ -50,3 +50,7 @@ Never upload real customer records or sensitive documents to this prototype. Its
 ## Local persistence added
 
 `GET /api/state` loads saved messages and the sample approval decision. `POST /api/messages` appends a validated message, `POST /api/approval` records a one-time decision, and `POST /api/reset` explicitly clears the demo state. Writes are serialized in one process and replaced atomically. This is local single-process storage, not a database, audit log, or multi-user solution. Up to five text documents are stored in the same local file; `/api/documents` and `/api/documents/delete` manage them. Reset clears them together with messages and approvals.
+
+## Local human-review queue
+
+`POST /api/escalations` creates a review containing the case ID, a customer message summary and timestamp. It rejects a second open review for the same case. `GET /api/escalations` lists local requests, and `POST /api/escalations/resolve` records a review timestamp. The queue does not notify anyone, connect to a helpdesk, verify resolution, or provide a complete audit trail. Reset clears it.
